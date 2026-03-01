@@ -103,6 +103,78 @@ Change brightness (0-7).
 ### set_on(bool)
 Turn display on/off.
 
+## Raw Buffer Access
+
+For advanced use cases (custom symbols, LED matrices, etc.), you can directly manipulate the 16-byte display buffer.
+
+### get_buffer()
+Get pointer to the raw 16-byte display buffer.
+
+```yaml
+lambda: |-
+  uint8_t *buf = it.get_buffer();
+  buf[0] = 0xFF;  // Direct access
+```
+
+### set_raw(pos, value)
+Write a raw byte at a specific buffer position (0-15), overwriting existing value.
+
+```yaml
+lambda: |-
+  it.set_raw(3, 0x12);  // Set byte 3 to 0x12
+```
+
+### set_raw_or(pos, value)
+OR a raw byte at a specific buffer position, combining with existing value (useful for setting individual bits).
+
+```yaml
+lambda: |-
+  it.set_raw_or(3, 0x02);  // Set bit 1 without affecting other bits
+```
+
+### set_raw_and(pos, value)
+AND a raw byte at a specific buffer position (useful for clearing specific bits).
+
+```yaml
+lambda: |-
+  it.set_raw_and(3, 0xFD);  // Clear bit 1, keep others
+```
+
+### clear_raw(pos)
+Clear a specific buffer position (set to 0).
+
+```yaml
+lambda: |-
+  it.clear_raw(3);  // Clear byte 3
+```
+
+## Example: Xiaomi Smart Kettle 2 Pro
+
+The TM1640 in the Xiaomi kettle has a specific memory map:
+
+| Byte | Function |
+|------|----------|
+| 0 | Digit 1 (tens) - 7-segment |
+| 1 | Digit 2 (units) - 7-segment |
+| 3 | Symbols: bit1=WiFi, bit4=°C |
+| 4-6 | RGB LEDs 1-7 (Orange/Blue/Red) |
+| 7-9 | RGB LEDs 8-12 (Orange/Blue/Red) |
+
+```yaml
+display:
+  - platform: tm1640
+    clk_pin: GPIO14
+    din_pin: GPIO12
+    length: 10
+    lambda: |-
+      // Display "85°C" with WiFi icon
+      it.print("85");
+      it.set_raw_or(3, 0x02 | 0x10);  // WiFi + °C icons
+      
+      // Light up orange LEDs 1-7
+      it.set_raw(4, 0x7F);
+```
+
 ## Supported Characters
 
 The component supports ASCII characters from space (0x20) to tilde (0x7E).

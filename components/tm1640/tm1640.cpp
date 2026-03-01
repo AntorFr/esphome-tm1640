@@ -322,5 +322,29 @@ uint8_t TM1640Display::strftime(uint8_t pos, const char *format, ESPTime time) {
 
 uint8_t TM1640Display::strftime(const char *format, ESPTime time) { return this->strftime(0, format, time); }
 
+void TM1640Display::set_raw(uint8_t pos, uint8_t value) {
+  if (pos < TM1640_MAX_POS) {
+    this->buffer_[pos] = value;
+  }
+}
+
+void TM1640Display::set_raw_or(uint8_t pos, uint8_t value) {
+  if (pos < TM1640_MAX_POS) {
+    this->buffer_[pos] |= value;
+  }
+}
+
+void TM1640Display::set_raw_and(uint8_t pos, uint8_t value) {
+  if (pos < TM1640_MAX_POS) {
+    this->buffer_[pos] &= value;
+  }
+}
+
+void TM1640Display::clear_raw(uint8_t pos) {
+  if (pos < TM1640_MAX_POS) {
+    this->buffer_[pos] = 0;
+  }
+}
+
 }  // namespace tm1640
 }  // namespace esphome

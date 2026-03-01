@@ -9,6 +9,8 @@
 namespace esphome {
 namespace tm1640 {
 
+static const uint8_t TM1640_MAX_POS = 16;
+
 class TM1640Display;
 
 using tm1640_writer_t = display::DisplayWriter<TM1640Display>;
@@ -49,6 +51,21 @@ class TM1640Display : public PollingComponent {
   uint8_t strftime(uint8_t pos, const char *format, ESPTime time) __attribute__((format(strftime, 3, 0)));
   /// Evaluate the strftime-format and print the result at position 0.
   uint8_t strftime(const char *format, ESPTime time) __attribute__((format(strftime, 2, 0)));
+
+  /// Get pointer to the raw 16-byte display buffer
+  uint8_t *get_buffer() { return this->buffer_; }
+
+  /// Write a raw byte at a specific buffer position (0-15), overwriting existing value
+  void set_raw(uint8_t pos, uint8_t value);
+
+  /// OR a raw byte at a specific buffer position (0-15), combining with existing value
+  void set_raw_or(uint8_t pos, uint8_t value);
+
+  /// AND a raw byte at a specific buffer position (0-15), for clearing specific bits
+  void set_raw_and(uint8_t pos, uint8_t value);
+
+  /// Clear a specific buffer position
+  void clear_raw(uint8_t pos);
 
  protected:
   void bit_delay_();
