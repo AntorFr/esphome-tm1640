@@ -1,0 +1,22 @@
+esphome:
+  name: test-tm1640
+  friendly_name: Test TM1640
+
+esp8266:
+  board: d1_mini
+
+logger:
+
+external_components:
+  - source:
+      type: local
+      path: components
+
+display:
+  - platform: tm1640
+    clk_pin: GPIO14
+    din_pin: GPIO12
+    intensity: 7
+    length: 8
+    lambda: |-
+      it.print("TEST");
