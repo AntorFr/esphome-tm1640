@@ -1,0 +1,109 @@
+# Example ESPHome configuration for TM1640 display
+# Copy this file to your ESPHome config directory and modify as needed
+
+esphome:
+  name: tm1640-display
+  friendly_name: TM1640 Display
+
+esp8266:
+  board: d1_mini
+  # For ESP32, use:
+  # esp32:
+  #   board: esp32dev
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "TM1640-Display"
+    password: !secret ap_password
+
+captive_portal:
+
+# Get time from Home Assistant
+time:
+  - platform: homeassistant
+    id: ha_time
+
+# External components for TM1640
+external_components:
+  - source:
+      type: local
+      path: components
+
+# TM1640 Display Configuration
+display:
+  - platform: tm1640
+    id: tm1640_display
+    clk_pin: GPIO14   # D5 on D1 Mini
+    din_pin: GPIO12   # D6 on D1 Mini
+    intensity: 5      # Brightness 0-7
+    length: 8         # Number of digits (adjust to your display)
+    inverted: false
+    update_interval: 500ms
+    lambda: |-
+      // Display current time HH.MM
+      if (id(ha_time).now().is_valid()) {
+        it.strftime("%H.%M", id(ha_time).now());
+      } else {
+        it.print("----");
+      }
+
+# Optional: Example with multiple display modes controlled by button
+# button:
+#   - platform: template
+#     name: "Cycle Display"
+#     on_press:
+#       - lambda: |-
+#           static int mode = 0;
+#           mode = (mode + 1) % 3;
+#           // Store mode for use in display lambda
+
+# Optional: Example sensor display
+# sensor:
+#   - platform: homeassistant
+#     id: temperature
+#     entity_id: sensor.temperature
+#     
+# display:
+#   - platform: tm1640
+#     clk_pin: GPIO14
+#     din_pin: GPIO12
+#     update_interval: 1s
+#     lambda: |-
+#       if (id(temperature).has_state()) {
+#         it.printf("%.1f", id(temperature).state);
+#       }
+
+# Alternative: Display counter example
+# globals:
+#   - id: counter
+#     type: int
+#     initial_value: '0'
+#
+# interval:
+#   - interval: 1s
+#     then:
+#       - lambda: |-
+#           id(counter) += 1;
+#
+# display:
+#   - platform: tm1640
+#     clk_pin: GPIO14
+#     din_pin: GPIO12
+#     lambda: |-
+#       it.printf("%8d", id(counter));
