@@ -11,7 +11,7 @@ from esphome.const import (
     CONF_LENGTH,
 )
 
-CODEOWNERS = ["@berard"]
+CODEOWNERS = ["@AntorFr"]
 
 CONF_DIN_PIN = "din_pin"
 

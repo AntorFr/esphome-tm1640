@@ -26,23 +26,22 @@ Add to your ESPHome configuration:
 ```yaml
 external_components:
   - source:
-      type: local
-      path: components
-```
-
-Or from GitHub:
-
-```yaml
-external_components:
-  - source:
       type: git
-      url: https://github.com/YOUR_USERNAME/esphome-TM1640
+      url: https://github.com/AntorFr/esphome-tm1640
       ref: main
+    refresh: 0s
 ```
 
 ## Configuration Example
 
 ```yaml
+external_components:
+  - source:
+      type: git
+      url: https://github.com/AntorFr/esphome-tm1640
+      ref: main
+    refresh: 0s
+
 display:
   - platform: tm1640
     clk_pin: GPIO14
